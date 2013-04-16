@@ -1,0 +1,6 @@
+oar2scad
+
+The idea is to unpack the oard file. Read through the appropriate directories and files. Parse the XML and then
+generate the OpenScad code to create the world procedurally.
+ 
+This directory contains helper files for reading the unpacked oar directory.
