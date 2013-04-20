@@ -17,9 +17,11 @@ import tarfile
 from lxml import etree
 import base64
 import binascii
-
-
+from pprint import pprint as pp
 from optparse import OptionParser
+
+
+
 
 def main():
         usage = "usage: %prog [options] arg"
@@ -119,23 +121,44 @@ def parseXMLFile(file, verbose):
 	tree = etree.parse(file)
 	root = tree.getroot()
 	uuids = root.findall(".//UUID/Guid")
-	shapes = root.findall(".//Shapes")
-	textureEntries = root.findall(".//TextureEntry")
-	if verbose:
-		print root.tag
-		print(etree.tostring(root, pretty_print=True))
-		for uuid in uuids:
-		    print "UUID: ", uuid.text
+	#shapes = root.findall(".//Shapes")
+	#textureEntries = root.findall(".//TextureEntry")
+	
+	data = {}
+	data['TextureEntry'] = root.findtext(".//TextureEntry") 
+	GroupPosition = root.find(".//GroupPosition")
+	data['GroupPosition'] = getDict(GroupPosition)
+	data['OffestPosition'] = getDict(  root.find(".//OffsetPosition"))
+	data['RotationOffset'] = getDict(root.find(".//RotationOffset"))
+	data['Color'] = getDict(root.find(".//Color"))
+	data['Profileshape'] = root.findtext(".//ProfileShape")
+	#data['path'] = root.findall(".//path")
+	#data['Shape'] = getDict(root.find(".//Shape"))
+	data['Scale'] = getDict(root.find(".//Scale"))
+	data['ParentID'] = root.find(".//ParentID").text
 
-		for shape in shapes:
-		    print etree.tostring(shape, pretty_print=True)
+	if verbose is not None:
+		pp(data)
+		#print root.tag
+		#print(etree.tostring(root, pretty_print=True))
+		#for uuid in uuids:
+		#    print "UUID: ", uuid.text
 
-		for tEntry in textureEntries:
-		    #print etree.tostring(guid, pretty_print=True)
-		    print "org: ",tEntry.text,
-		    #print "decode: ",base64.b64encode(tEntry.text)
-		    print "hex: ",binascii.hexlify(base64.b64decode(tEntry.text))
+		#for shape in shapes:
+		#    print etree.tostring(shape, pretty_print=True)
+
+		#for tEntry in textureEntries:
+		#    #print etree.tostring(guid, pretty_print=True)
+		#    print "org: ",tEntry.text,
+		#    #print "decode: ",base64.b64encode(tEntry.text)
+
+		#    print "hex: ",binascii.hexlify(base64.b64decode(tEntry.text))
 		
+def getDict(tag):
+	items = {}
+	for elem in tag:
+		items[elem.tag] = elem.text.strip()
+	return items
 
 
 if __name__=="__main__":
