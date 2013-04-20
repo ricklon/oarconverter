@@ -75,7 +75,7 @@ def parse_asset_name(file, verbose):
 		uuid = os.path.basename(file).split("_")[0]
 		asset_type = os.path.basename(file).split("_")[1].split(".")[0]
 		if asset_type == "object":
-			parseXMLFile(file,verbose)
+			mapThreeJS(parseXMLFile(file,verbose))
 			
 		if verbose:
 				print "UUID: ", uuid, " TYPE: ", asset_type
@@ -87,7 +87,7 @@ def parse_object_name(file, verbose):
 		yy = os.path.basename(file).split("-")[1]
 		zz = os.path.basename(file).split("-")[2].split("__")[0]
 		uuid = os.path.basename(file).split("__")[1].split(".")[0]
-		parseXMLFile(file,verbose)
+		mapThreeJS(parseXMLFile(file,verbose))
 		if verbose:
                     print "Name: ", name, "X: ",xx, " Y: ",yy, " Z: ",zz, " UUID: ", uuid
 		return [uuid, name, xx, yy, zz]
@@ -153,12 +153,17 @@ def parseXMLFile(file, verbose):
 		#    #print "decode: ",base64.b64encode(tEntry.text)
 
 		#    print "hex: ",binascii.hexlify(base64.b64decode(tEntry.text))
+	return data
 		
 def getDict(tag):
 	items = {}
 	for elem in tag:
 		items[elem.tag] = elem.text.strip()
 	return items
+
+
+def mapThreeJS(prim):
+	pp(prim['Scale'])
 
 
 if __name__=="__main__":
