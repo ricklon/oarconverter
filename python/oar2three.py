@@ -14,6 +14,10 @@
 
 import os
 import tarfile
+from lxml import etree
+import base64
+import binascii
+
 
 from optparse import OptionParser
 
@@ -68,6 +72,9 @@ def walk_objects(object_dir,verbose):
 def parse_asset_name(file, verbose):
 		uuid = os.path.basename(file).split("_")[0]
 		asset_type = os.path.basename(file).split("_")[1].split(".")[0]
+		if asset_type == "object":
+			parseXMLFile(file,verbose)
+			
 		if verbose:
 				print "UUID: ", uuid, " TYPE: ", asset_type
 		return [uuid, asset_type]
@@ -78,6 +85,7 @@ def parse_object_name(file, verbose):
 		yy = os.path.basename(file).split("-")[1]
 		zz = os.path.basename(file).split("-")[2].split("__")[0]
 		uuid = os.path.basename(file).split("__")[1].split(".")[0]
+		parseXMLFile(file,verbose)
 		if verbose:
                     print "Name: ", name, "X: ",xx, " Y: ",yy, " Z: ",zz, " UUID: ", uuid
 		return [uuid, name, xx, yy, zz]
@@ -106,6 +114,28 @@ def get_password(option, opt_str, value, parser ):
                 
         return
 
+
+def parseXMLFile(file, verbose):
+	tree = etree.parse(file)
+	root = tree.getroot()
+	uuids = root.findall(".//UUID/Guid")
+	shapes = root.findall(".//Shapes")
+	textureEntries = root.findall(".//TextureEntry")
+	if verbose:
+		print root.tag
+		print(etree.tostring(root, pretty_print=True))
+		for uuid in uuids:
+		    print "UUID: ", uuid.text
+
+		for shape in shapes:
+		    print etree.tostring(shape, pretty_print=True)
+
+		for tEntry in textureEntries:
+		    #print etree.tostring(guid, pretty_print=True)
+		    print "org: ",tEntry.text,
+		    #print "decode: ",base64.b64encode(tEntry.text)
+		    print "hex: ",binascii.hexlify(base64.b64decode(tEntry.text))
+		
 
 
 if __name__=="__main__":
