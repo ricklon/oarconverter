@@ -165,6 +165,18 @@ def getDict(tag):
 def mapThreeJS(prim):
 	pp(prim['Scale'])
 
+#use the base 64 texture entry, and return a dictionary containing the faces and the associated files
+def parse_textureEntry(textureEntry):
+        #convert from base64 to base16
+        decodedTextureEntry = binascii.hexlify(base64.b64decode(TextureEntry))
+        print decodedTextureEntry
+        for ii in range(32,decodedTextureEntryi.length):
+                #the actual id of the texture entry
+                print decodedTextureEntry[ii-32:ii]
+                ii+=2
+                #bitmask that identifies which faces the texture is applied to, the first is the default so it doesn't have a bitmask
+                print decodedTextureEntry[ii-2:ii]
+
 
 if __name__=="__main__":
         main()
