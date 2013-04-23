@@ -125,7 +125,7 @@ def parseXMLFile(file, verbose):
 	#textureEntries = root.findall(".//TextureEntry")
 	
 	data = {}
-	data['TextureEntry'] = root.findtext(".//TextureEntry") 
+	data['TextureEntry'] = parse_textureEntry(root.findtext(".//TextureEntry"))
 	GroupPosition = root.find(".//GroupPosition")
 	data['GroupPosition'] = getDict(GroupPosition)
 	data['OffestPosition'] = getDict(  root.find(".//OffsetPosition"))
@@ -165,6 +165,57 @@ def getDict(tag):
 def mapThreeJS(prim):
 	pp(prim['Scale'])
 
+#use the base 64 texture entry, and return a dictionary containing the faces and the associated files
+def parse_textureEntry(textureEntry):
+        #convert from base64 to base16
+	bitmask = "11111111"
+        decodedTextureEntry = binascii.hexlify(base64.b64decode(textureEntry))
+	data = {}
+	print("New Texutre Entry")
+        print decodedTextureEntry
+	ii=32
+	while(True):
+                #the actual id of the texture entry
+                currentTexture = decodedTextureEntry[ii-32:ii]
+                ii+=2
+		for i in xrange(0,8):
+			if(bitmask[i]=='1'):
+				data[i]=currentTexture
+		bitmask=getBitmask(decodedTextureEntry[ii-2:ii])
+		#the bitmask will be all 0's if it is the end of the texture. Next block is stuff like alpha's which we don't care about for now
+		if(bitmask=="00000000"):
+			break
+		ii+=32
+                #bitmask that identifies which faces the texture is applied to, the first is the default so it doesn't have a bitmask
+	return data
+
+#converts the hex string into the bitmask
+def getBitmask(hexstring):
+	bitmask=""
+	for hexChar in hexstring:
+		bitmask+=hexCharToBinString(hexChar)
+	return bitmask
+
+#converts one hex character to four binary characters
+def hexCharToBinString(hexChar):
+	return {
+		'0': "0000",
+		'1': "0001",
+		'2': "0010",
+		'3': "0011",
+		'4': "0100",
+		'5': "0101",
+		'6': "0110",
+		'7': "0111",
+		'8': "1000",
+		'9': "1001",
+		'a': "1010",
+		'b': "1011",
+		'c': "1100",
+		'd': "1101",
+		'e': "1110",
+		'f': "1111",
+	}[hexChar]
 
 if __name__=="__main__":
         main()
