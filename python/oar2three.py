@@ -1,5 +1,5 @@
 #
-# oar2openscad
+# oar2three
 # Read the Open Sim Archive extract it, read through the files, generate three.js json object
 # 
 # usage:
@@ -13,6 +13,7 @@
 
 
 import os
+import dictToThree
 import tarfile
 from lxml import etree
 import base64
@@ -137,7 +138,7 @@ def parseXMLFile(file, verbose):
 	data['Scale'] = getDict(root.find(".//Scale"))
 	data['ParentID'] = root.find(".//ParentID").text
 
-	if verbose is not None:
+	if verbose:
 		pp(data)
 		#print root.tag
 		#print(etree.tostring(root, pretty_print=True))
