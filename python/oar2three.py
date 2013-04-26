@@ -13,7 +13,7 @@
 
 
 import os
-import dictToThree
+import primToVertices
 import tarfile
 from lxml import etree
 import base64
@@ -137,6 +137,8 @@ def parseXMLFile(file, verbose):
 	#data['Shape'] = getDict(root.find(".//Shape"))
 	data['Scale'] = getDict(root.find(".//Scale"))
 	data['ParentID'] = root.find(".//ParentID").text
+	if(data['Profileshape']=="Square"):
+		data['Three']=primToVertices.getCube(data)
 
 	if verbose:
 		pp(data)
