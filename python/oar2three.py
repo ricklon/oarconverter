@@ -30,12 +30,12 @@ def main():
         #Actions
         #parser.add_option("-h", "--help", action="help")
         parser.add_option("-o", "--output", dest="output", help="specify an output directory")
-        parser.add_option("-v", "--verbose",
-                                    action="store_true", dest="verbose", default=True,
-                                    help="show debug info [default]")
-        parser.add_option("-q", "--quiet",  action="store_false", dest="verbose", default=True, help="don't print status messages to stdout")
-        (options, args) = parser.parse_args()
-
+        parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
+                                    help="show debug info")
+        parser.add_option("-q", "--quiet",  action="store_false", dest="verbose", default=False, help="don't print status messages to stdout")
+	(options, args) = parser.parse_args()
+	print "verbose:" 
+	print options.verbose
         if len(args) != 1:
                 parser.error("incorrect number of arguments")
         file = args[0]
