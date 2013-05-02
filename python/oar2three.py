@@ -1,5 +1,5 @@
 #
-# oar2openscad
+# oar2three
 # Read the Open Sim Archive extract it, read through the files, generate three.js json object
 # 
 # usage:
@@ -13,13 +13,14 @@
 
 
 import os
+import primToVertices
 import tarfile
 from lxml import etree
 import base64
 import binascii
 from pprint import pprint as pp
 from optparse import OptionParser
-
+import json
 
 
 
@@ -29,12 +30,10 @@ def main():
         #Actions
         #parser.add_option("-h", "--help", action="help")
         parser.add_option("-o", "--output", dest="output", help="specify an output directory")
-        parser.add_option("-v", "--verbose",
-                                    action="store_true", dest="verbose", default=True,
-                                    help="show debug info [default]")
-        parser.add_option("-q", "--quiet",  action="store_false", dest="verbose", default=True, help="don't print status messages to stdout")
-        (options, args) = parser.parse_args()
-
+        parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
+                                    help="show debug info")
+        parser.add_option("-q", "--quiet",  action="store_false", dest="verbose", default=False, help="don't print status messages to stdout")
+	(options, args) = parser.parse_args()
         if len(args) != 1:
                 parser.error("incorrect number of arguments")
         file = args[0]
@@ -50,9 +49,13 @@ def main():
         if options.verbose:
 		print asset_dir
                 print object_dir
+	if os.path.exists("./test.out"):
+		os.remove("./test.out")
         walk_assets(asset_dir, options.verbose)
         #walk through objectsA
         walk_objects(object_dir, options.verbose)
+	with open("./test.out", 'a') as myfile:
+		myfile.write("]")
 
       
 
@@ -67,7 +70,6 @@ def walk_objects(object_dir,verbose):
     for root, dirs, files in os.walk(object_dir):
         for name in files:
             filename = os.path.join(root, name)
-            print filename
             parse_object_name(filename, verbose)
 
 
@@ -137,7 +139,7 @@ def parseXMLFile(file, verbose):
 	data['Scale'] = getDict(root.find(".//Scale"))
 	data['ParentID'] = root.find(".//ParentID").text
 
-	if verbose is not None:
+	if verbose:
 		pp(data)
 		#print root.tag
 		#print(etree.tostring(root, pretty_print=True))
@@ -163,7 +165,14 @@ def getDict(tag):
 
 
 def mapThreeJS(prim):
-	pp(prim['Scale'])
+	if(os.path.exists("./test.out")):
+		with open("./test.out", 'a') as myfile:
+			myfile.write(',')
+			myfile.write(json.dumps(prim))
+	else:
+		with open("./test.out", 'a') as myfile:
+			myfile.write("[")
+			myfile.write(json.dumps(prim))
 
 #use the base 64 texture entry, and return a dictionary containing the faces and the associated files
 def parse_textureEntry(textureEntry):
@@ -171,8 +180,6 @@ def parse_textureEntry(textureEntry):
 	bitmask = "11111111"
         decodedTextureEntry = binascii.hexlify(base64.b64decode(textureEntry))
 	data = {}
-	print("New Texutre Entry")
-        print decodedTextureEntry
 	ii=32
 	while(True):
                 #the actual id of the texture entry
