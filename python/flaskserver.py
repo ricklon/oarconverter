@@ -3,10 +3,11 @@ import tarfile
 from lxml import etree
 import base64
 import binascii
+from os import unlink
 from pprint import pprint as pp
 from optparse import OptionParser
 import json
-
+import commands
 
 from flask import Flask, request, redirect, url_for
 from werkzeug import secure_filename
@@ -25,11 +26,16 @@ def upload_file():
 	if file:
 	    filename = secure_filename(file.filename)
 	    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	    outpath = os.path.basename(file.filename)
+	    outpath = "./static/"+os.path.basename(file.filename).split(".")[0]
 	    untar(os.path.join(app.config['UPLOAD_FOLDER'], filename), outpath, False)
 	    object_dir='./'+outpath+'/objects'
 	    parsedJson = walk_objects(object_dir, False)
-	    print parsedJson
+	    #threejs doesn't support jp2, so we convert to png
+	    cmd = "mogrify -format png ./" +outpath+"/assets/*.jp2"
+	    commands.getstatusoutput(cmd)
+	    #delete the old jp2 files
+	    cmd = "rm ./"+outpath+"/assets/*.jp2"
+	    commands.getstatusoutput(cmd)
 	    return parsedJson
 
 def walk_objects(object_dir,verbose):
