@@ -11,8 +11,16 @@ import commands
 
 from flask import Flask, request, redirect, url_for
 from werkzeug import secure_filename
+
+ALLOWED_EXTENSIONS = set(['oar', 'iar'])
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER']= 'oars'
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 @app.route('/')
@@ -23,7 +31,7 @@ def hello_world():
 def upload_file():
     if request.method == 'POST':
 	file = request.files['oar']
-	if file:
+	if file and allowed_file(file.filename):
 	    filename = secure_filename(file.filename)
 	    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 	    outpath = "./static/"+os.path.basename(file.filename).split(".")[0]
