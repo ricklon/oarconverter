@@ -527,21 +527,25 @@
 								return $.ajaxSettings.xhr();
 							},
 							success: completeHandler = function(data) {
-								returnedData = data;
 								data = jQuery.parseJSON(data);
 								for(var i=0; i<data.length; i++)
 								{
 									var geo = new THREE.CubeGeometry(data[i].Scale.X-0, data[i].Scale.Y-0, data[i].Scale.Z-0);
-									var materials = new THREE.MeshBasicMaterial({color: 0x00ff00});
-									/*for(var j=0; j<6; j++ ){
-										materials.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture(getMaterialPath(data[j].TextureEntry[j])), overdraw: true}));
-									}*/
-									var cube = new THREE.Mesh(geo, materials);
+									var materials = [];
+									for(var j=0; j<6; j++)
+									{
+										var texture = THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[j],file.name.split(".")[0]));
+										materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff,  map: texture}));
+									}
+									console.log("Hi");
+									var cube = new THREE.Mesh(geo, new THREE.MeshFaceMaterial(materials));
+									console.log("Bye");
 									cube.position.x=data[i].GroupPosition.X-0;
 									cube.position.y=data[i].GroupPosition.Y-0;
 									cube.position.z=data[i].GroupPosition.Z-0;
 									console.log(cube);
 									signals.objectAdded.dispatch(cube);
+									console.log("Done");
 								}
 							},
 							error: errorHandler = function() {
@@ -610,7 +614,7 @@
 			onWindowResize();
 			
 			function getMaterialPath(material, file) {
-				return "/static/"+file+"/assets"+material.substring(0,8)+"-"+material.substring(8,12)+"-"+material.substring(12,16)+"-"+material.substring(16)+"_texture.jp2";
+				return "/static/"+file+"/assets/"+material.substring(0,8)+"-"+material.substring(8,12)+"-"+material.substring(12,16)+"-"+material.substring(16,20)+"-"+material.substring(20)+"_texture.png";
 			}
 		</script>
 	</body>
