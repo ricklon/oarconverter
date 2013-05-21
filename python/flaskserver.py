@@ -36,7 +36,10 @@ def upload_file():
 	    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 	    outpath = "./static/"+os.path.basename(file.filename).split(".")[0]
 	    untar(os.path.join(app.config['UPLOAD_FOLDER'], filename), outpath, False)
-	    object_dir='./'+outpath+'/objects'
+	    if(filename.rsplit('.', 1)[1] == "oar"):
+		object_dir='./'+outpath+'/objects'
+	    elif(filename.rsplit('.', 1)[1] == "iar"):
+		object_dir='./'+outpath+'/assets'
 	    parsedJson = walk_objects(object_dir, False)
 	    #threejs doesn't support jp2, so we convert to png
 	    cmd = "mogrify -format png ./" +outpath+"/assets/*.jp2"
@@ -50,8 +53,9 @@ def walk_objects(object_dir,verbose):
     jsonData = '['
     for root, dirs, files in os.walk(object_dir):
         for name in files:
-            filename = os.path.join(root, name)
-            jsonData +=json.dumps(parseXMLFile(filename, verbose))+','
+            if(name.rsplit('.', 1)[1] == "xml"):
+		    filename = os.path.join(root, name)
+		    jsonData +=json.dumps(parseXMLFile(filename, verbose))+','
     jsonData = jsonData[:-1] +']'
     return jsonData
 	    
@@ -66,7 +70,7 @@ def parseXMLFile(file, verbose):
 	data['OffestPosition'] = getDict(  root.find(".//OffsetPosition"))
 	data['RotationOffset'] = getDict(root.find(".//RotationOffset"))
 	data['Color'] = getDict(root.find(".//Color"))
-	data['Profileshape'] = root.findtext(".//ProfileShape")
+	data['ProfileShape'] = root.findtext(".//ProfileShape")
 	#data['path'] = root.findall(".//path")
 	#data['Shape'] = getDict(root.find(".//Shape"))
 	data['Scale'] = getDict(root.find(".//Scale"))
