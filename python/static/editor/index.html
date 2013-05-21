@@ -530,9 +530,12 @@
 								data = jQuery.parseJSON(data);
 								for(var i=0; i<data.length; i++)
 								{
-									if(data[i].ProfileShape=='Square')
+									if(data[i].ProfileShape=='Square')//cube
 									{
 										var geo = new THREE.CubeGeometry(data[i].Scale.X-0, data[i].Scale.Y-0, data[i].Scale.Z-0);
+									}
+									else if(data[i].ProfileShape=='HalfCircle')//Sphere
+									{
 									}
 									else
 									{
@@ -541,11 +544,12 @@
 									}
 									console.log(i);
 									var materials = [];
-									for(var j=0; j<6; j++)
-									{
-										var texture = THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[j],file.name.split(".")[0]));
-										materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff,  map: texture}));
-									}
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[5],file.name.split(".")[0]))}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[3],file.name.split(".")[0]))}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[4],file.name.split(".")[0]))}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[6],file.name.split(".")[0]))}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[7],file.name.split(".")[0]))}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[0],file.name.split(".")[0]))}));
 									var cube = new THREE.Mesh(geo, new THREE.MeshFaceMaterial(materials));
 									cube.position.x=data[i].GroupPosition.X-0;
 									cube.position.y=data[i].GroupPosition.Y-0;
