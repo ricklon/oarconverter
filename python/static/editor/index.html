@@ -534,9 +534,6 @@
 									{
 										var geo = new THREE.CubeGeometry(data[i].Scale.X-0, data[i].Scale.Y-0, data[i].Scale.Z-0);
 									}
-									else if(data[i].ProfileShape=='HalfCircle')//Sphere
-									{
-									}
 									else
 									{
 										console.log(data[i].ProfileShape);
@@ -544,12 +541,12 @@
 									}
 									console.log(i);
 									var materials = [];
-									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[5],file.name.split(".")[0]))}));
-									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[3],file.name.split(".")[0]))}));
-									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[4],file.name.split(".")[0]))}));
-									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[6],file.name.split(".")[0]))}));
-									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[7],file.name.split(".")[0]))}));
-									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: THREE.ImageUtils.loadTexture(getMaterialPath(data[i].TextureEntry[0],file.name.split(".")[0]))}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: getTexture(data[i].TextureEntry[5],file.name.split(".")[0])}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: getTexture(data[i].TextureEntry[3],file.name.split(".")[0])}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: getTexture(data[i].TextureEntry[4],file.name.split(".")[0])}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: getTexture(data[i].TextureEntry[6],file.name.split(".")[0])}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: getTexture(data[i].TextureEntry[7],file.name.split(".")[0])}));
+									materials.push(new THREE.MeshBasicMaterial( {color: 0xffffff, map: getTexture(data[i].TextureEntry[0],file.name.split(".")[0])}));
 									var cube = new THREE.Mesh(geo, new THREE.MeshFaceMaterial(materials));
 									cube.position.x=data[i].GroupPosition.X-0;
 									cube.position.y=data[i].GroupPosition.Y-0;
@@ -667,6 +664,22 @@
 			window.addEventListener( 'resize', onWindowResize, false );
 
 			onWindowResize();
+			var textures = [];
+			var textureNames = [];
+			function getTexture(material, file)
+			{
+				if(textureNames.indexOf(material)==-1)
+				{
+					var texture = THREE.ImageUtils.loadTexture(getMaterialPath(material,file));
+					textures.push(texture);
+					textureNames.push(material);
+					return texture;
+				}
+				else //already loaded texture, just return it
+				{
+					return textures[textureNames.indexOf(material)];
+				}
+			}
 			
 			function getMaterialPath(material, file) {
 				return "/static/"+file+"/assets/"+material.substring(0,8)+"-"+material.substring(8,12)+"-"+material.substring(12,16)+"-"+material.substring(16,20)+"-"+material.substring(20)+"_texture.png";
